@@ -15,12 +15,18 @@ urlpatterns = [
     path("users/", include("apps.users.urls")),
     path("categories/", include("apps.categories.urls")),
     path("recipes/", include("apps.recipes.urls")),
+    path("interactions/", include("apps.interactions.urls")),
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path("swagger/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
     path("redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
-    path("interactions/", include("apps.interactions.urls")),
+    
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+if "rosetta" in settings.INSTALLED_APPS:
+    urlpatterns += [
+        path("rosetta/", include("rosetta.urls")),
+    ]

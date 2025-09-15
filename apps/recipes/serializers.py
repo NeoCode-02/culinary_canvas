@@ -24,10 +24,10 @@ class RecipeSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ('id', 'slug', 'author', 'created_at', 'updated_at', 'average_rating', 'image_url')
     
-    def get_average_rating(self, obj):
+    def get_average_rating(self, obj) -> float | None:
         return obj.average_rating()
-    
-    def get_image_url(self, obj):
+
+    def get_image_url(self, obj) -> str | None:
         if obj.image:
             request = self.context.get('request')
             if request:
@@ -55,5 +55,5 @@ class RecipeListSerializer(serializers.ModelSerializer):
             'created_at', 'average_rating'
         )
     
-    def get_average_rating(self, obj):
+    def get_average_rating(self, obj) -> float | None:
         return obj.average_rating()

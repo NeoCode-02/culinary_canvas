@@ -1,7 +1,7 @@
 from pathlib import Path
 from decouple import config
 from datetime import timedelta
-from django.utils.translation import gettext_lazy as _  # Add this import
+from django.utils.translation import gettext_lazy as _
 
 from core.jazzmin_conf import JAZZMIN_SETTINGS  # noqa
 
@@ -48,6 +48,7 @@ EXTERNAL_APPS = [
     "django_filters",
     "drf_spectacular",
     "drf_spectacular_sidecar",
+    "rosetta",
 ]
 
 
@@ -56,6 +57,7 @@ INSTALLED_APPS = EXTERNAL_APPS + LOCAL_APPS + DJANGO_APPS
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -135,6 +137,16 @@ LANGUAGES = [
     ("uz", _("Uzbek")),
 ]
 
+LOCALE_PATHS = [
+    BASE_DIR / "locale",
+]
+
+TRANSLATABLE_MODEL_MODULES = (
+    'users.models',
+    'recipes.models',
+    'categories.models',
+    'interactions.models',
+)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/

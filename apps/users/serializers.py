@@ -57,20 +57,20 @@ class LoginSerializer(serializers.Serializer):
         
         raise serializers.ValidationError('Both email and password are required.')
 
-# apps/users/serializers.py
-from rest_framework import serializers
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
+from drf_spectacular.utils import extend_schema_field
 
 class UserProfileSerializer(serializers.ModelSerializer):
     profile_picture_url = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = User
-        fields = ('id', 'email', 'first_name', 'last_name', 'profile_picture', 'profile_picture_url', 'is_verified', 'created_at', 'updated_at')
-        read_only_fields = ('id', 'email', 'is_verified', 'created_at', 'updated_at')
-    
+        fields = (
+            'id', 'email', 'first_name', 'last_name',
+            'profile_picture', 'profile_picture_url',
+            'is_verified', 'created_at', 'updated_at'
+        )
+
+    @extend_schema_field(serializers.URLField(allow_null=True))
     def get_profile_picture_url(self, obj):
         if obj.profile_picture:
             request = self.context.get('request')
