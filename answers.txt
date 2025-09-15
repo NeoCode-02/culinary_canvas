@@ -1,0 +1,53 @@
+1.Aiogramda Finite State Machine nima va u nima uchun kerak? FSM bo’lmaganda nima bo’lar edi?
+
+Aiogramda FSM bizga shu jarayonlarni bosqichma-bosqich boshqarish imkonini beradi.
+yani cheklanga xolatlar mashinasi deganday biz xolatlarni kiritamiz va bot faqat shu holar bo'yicha ishlaydi.
+Agar FSM bo‘lmasa foydalanuvchi yuborgan xabar qaysi bosqichga tegishli ekanini aniqlash qiyin bo‘lgan bo'laredi. 
+foydalanuvchini yuborgan so'rovni qo‘lda tekshirishga to‘g‘ri kelardi har safar qo‘lda tekshirishga to‘g‘ri keladi va yozgan kodimiz chalkash bo‘lib ketish ehtimoli katta. 
+
+
+2.Aiogramda fayllar bilan ishlaganda ularni databasega qanday usulda saqlash kerak?
+
+Aiogramda fayllarni databasega faqat telegramga saqlanga o'zini uniqe keylari saqlanadi, 
+agar fayllarni o'zmiz databazamizga saqlasak database tez to'lib qolishi mumkin, yoki cloude serverlardan(S3 bucket) foydalanish kerak 
+
+
+3.Aiogramda dependency injection bormi? U qanday implement qilinadi va nima uchun kerak?
+
+Aiogramda dependency injection yo'q, uni o'rniga middlewares bor
+
+from typing import Any, Awaitable, Callable, Dict
+from aiogram import BaseMiddleware
+from aiogram.types import TelegramObject
+from .database import get_db_session
+
+
+class DbSessionMiddleware(BaseMiddleware):
+    """Middleware to inject database session into handler data"""
+
+    async def __call__(
+        self,
+        handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]],
+        event: TelegramObject,
+        data: Dict[str, Any],
+    ) -> Any:
+        async for session in get_db_session():
+            data["session"] = session
+            return await handler(event, data)
+
+shu holatga biz databasega bog'lanamiz har safar request kelganida, yani biz har safar databazani ochib yopib 
+o'tirmasdan tayyor middlewaredan foydalanamiz.
+
+
+4.Merchant va Subscribe API o’rtasida qanday farqlar bor?
+
+Merchant bu to‘lov qilish jarayoni uchun ishlatiladi. Foydalanuvchi bir marta mahsulot yoki servis uchun pul to‘laydi.
+Subsribe API bu obuna uchun ishlatilinadi. Foydalanuvchidan muntazam har oy/hafta avtomatik pul yechib olinadi.
+
+
+5.Biz merchant service sifatida nima uchun CallbackAPI tashkil qilishimiz kerak? Undan bizga nima foyda?
+
+CallbackAPI bu foydalanuvchi kartadan pul to‘laganida yoki to‘lov rad etilganda, 
+to‘lov servisi bizning serverimizni xabardor qiladi. 
+To‘lov muvaffaqiyatli o‘tdimi yoki yo‘qmi bilish uchun va 
+bizning databazada buyurtmaning holatini aniq va tez yangilash imkonini beradi.
